@@ -1,0 +1,154 @@
+From 61bb813d94e1dc4dce63a25d2d5a09d4da488f03 Mon Sep 17 00:00:00 2001
+From: amiraTech <rivercrayon@gmail.com>
+Date: Wed, 3 Jan 2024 19:22:58 +0000
+Subject: [PATCH] 03/01/2024 - Task 3
+
+---
+ .idea/workspace.xml    | 18 +++++++++++++-----
+ src/DataManipulator.ts | 32 +++++++++++++++++++++++---------
+ src/Graph.tsx          | 28 +++++++++++++++++++---------
+ 3 files changed, 55 insertions(+), 23 deletions(-)
+
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+index 6584255..f945bfd 100644
+--- a/.idea/workspace.xml
++++ b/.idea/workspace.xml
+@@ -1,7 +1,14 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <project version="4">
++  <component name="AutoImportSettings">
++    <option name="autoReloadType" value="SELECTIVE" />
++  </component>
+   <component name="ChangeListManager">
+-    <list default="true" id="a5ee04da-b024-409b-ba11-62f5b4c7a885" name="Changes" comment="" />
++    <list default="true" id="a5ee04da-b024-409b-ba11-62f5b4c7a885" name="Changes" comment="">
++      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/DataManipulator.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/DataManipulator.ts" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/Graph.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Graph.tsx" afterDir="false" />
++    </list>
+     <option name="SHOW_DIALOG" value="false" />
+     <option name="HIGHLIGHT_CONFLICTS" value="true" />
+     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+@@ -13,9 +20,9 @@
+   <component name="MarkdownSettingsMigration">
+     <option name="stateVersion" value="1" />
+   </component>
+-  <component name="ProjectColorInfo"><![CDATA[{
+-  "associatedIndex": 4
+-}]]></component>
++  <component name="ProjectColorInfo">{
++  &quot;associatedIndex&quot;: 4
++}</component>
+   <component name="ProjectId" id="2Xzww5q1GrKG5KD8zQyBwCqDv4e" />
+   <component name="ProjectViewState">
+     <option name="hideEmptyMiddlePackages" value="true" />
+@@ -25,7 +32,8 @@
+   "keyToString": {
+     "RunOnceActivity.OpenProjectViewOnStart": "true",
+     "RunOnceActivity.ShowReadmeOnStart": "true",
+-    "git-widget-placeholder": "main"
++    "git-widget-placeholder": "main",
++    "last_opened_file_path": "C:/Users/amira/OneDrive - University of Kent/Documents/GitHub/forage-jpmc-swe-t3"
+   }
+ }]]></component>
+   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+diff --git a/src/DataManipulator.ts b/src/DataManipulator.ts
+index 7f62295..3fe01c1 100644
+--- a/src/DataManipulator.ts
++++ b/src/DataManipulator.ts
+@@ -1,19 +1,33 @@
+ import { ServerRespond } from './DataStreamer';
+ 
+ export interface Row {
+-  stock: string,
+-  top_ask_price: number,
+-  timestamp: Date,
++ price_abc: number,
++ price_def: number,
++ ratio: number,
++ timestamp: Date,
++ upper_bound: number,
++ lower_bound: number,
++ trigger_alert: number | undefined,
+ }
+ 
+ 
+ export class DataManipulator {
+-  static generateRow(serverResponds: ServerRespond[]) {
+-    return serverResponds.map((el: any) => {
+-      return {
+-        stock: el.stock,
+-        top_ask_price: el.top_ask && el.top_ask.price || 0,
+-        timestamp: el.timestamp,
++  static generateRow(serverResponds: ServerRespond[]) Row {
++    const priceABC = (serverRespond[0].top_ask.price + serverRespond[0].top_bid.price) / 2;
++    const priceDEF = (serverRespond[1]).top_ask.price + serverRespond[1].top_bid.price) / 2;
++    const ratio = priceABC / priceDEF;
++    const upperBound = 1 + 0.05;
++    const lowerBound = 1 - 0.05;
++    return {
++      price_abc: priceABC;
++      price_def: priceDEF;
++      ratio,
++      timestamp: serverRespond[0].timestamp > serverRespond[1].timestamp ?
++      upper_bound: upperBound;
++      lower_bound: lowerBound;
++      trigger_alert: (ratio > upperBound || ratio < lowerBound) ? ratio : undefined,
++    }
++
+       };
+     })
+   }
+diff --git a/src/Graph.tsx b/src/Graph.tsx
+index 277797d..724f910 100644
+--- a/src/Graph.tsx
++++ b/src/Graph.tsx
+@@ -22,11 +22,19 @@ class Graph extends Component<IProps, {}> {
+     // Get element from the DOM.
+     const elem = document.getElementsByTagName('perspective-viewer')[0] as unknown as PerspectiveViewerElement;
+ 
++    //  Added the ratio field to track stock ratios instead of distinguishing between individual stocks.
++   // Introduced fields for upper_bound, lower_bound, and trigger_alert to monitor boundary crossings.
++  // Included price_abc and price_def for ratio calculation, even though they won't be displayed in the graph.
++ // Added a timestamp field to track changes over time.
++
+     const schema = {
+-      stock: 'string',
+-      top_ask_price: 'float',
+-      top_bid_price: 'float',
++      price_abc: 'float',
++      price_def: 'float',
++      ratio: 'float',
+       timestamp: 'date',
++      upper_bound: 'float' ,
++      lower_bound: 'float',
++      trigger_alert: 'float',
+     };
+ 
+     if (window.perspective && window.perspective.worker()) {
+@@ -36,14 +44,16 @@ class Graph extends Component<IProps, {}> {
+       // Load the `table` in the `<perspective-viewer>` DOM reference.
+       elem.load(this.table);
+       elem.setAttribute('view', 'y_line');
+-      elem.setAttribute('column-pivots', '["stock"]');
+       elem.setAttribute('row-pivots', '["timestamp"]');
+-      elem.setAttribute('columns', '["top_ask_price"]');
++      elem.setAttribute('columns', '["ratio", "lower_bound", "upper_bound", "trigger_alert"]');
+       elem.setAttribute('aggregates', JSON.stringify({
+-        stock: 'distinctcount',
+-        top_ask_price: 'avg',
+-        top_bid_price: 'avg',
+-        timestamp: 'distinct count',
++         price_abc: 'avg',
++         price_def: 'avg',
++         ratio: 'avg',
++         timestamp: 'distinct count',
++         upper_bound: 'avg',
++         lower_bound: 'avg',
++         trigger_alert: 'avg',
+       }));
+     }
+   }
+-- 
+2.42.0.windows.2
+
