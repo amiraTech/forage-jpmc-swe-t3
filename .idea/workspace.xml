@@ -1,22 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="a5ee04da-b024-409b-ba11-62f5b4c7a885" name="Changes" comment="" />
+    <list default="true" id="81d159bf-5844-4ef9-9d75-bc00d97317b4" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
-  </component>
-  <component name="MarkdownSettingsMigration">
-    <option name="stateVersion" value="1" />
-  </component>
   <component name="ProjectColorInfo"><![CDATA[{
+  "customColor": "",
   "associatedIndex": 4
 }]]></component>
-  <component name="ProjectId" id="2Xzww5q1GrKG5KD8zQyBwCqDv4e" />
+  <component name="ProjectId" id="2aSMcqgMJ3fslbmNwWSFyY1UXwt" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -24,18 +19,17 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "main"
+    "RunOnceActivity.ShowReadmeOnStart": "true"
   }
 }]]></component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="a5ee04da-b024-409b-ba11-62f5b4c7a885" name="Changes" comment="" />
-      <created>1699645453188</created>
+      <changelist id="81d159bf-5844-4ef9-9d75-bc00d97317b4" name="Changes" comment="" />
+      <created>1704307610538</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1699645453188</updated>
+      <updated>1704307610538</updated>
     </task>
     <servers />
   </component>
